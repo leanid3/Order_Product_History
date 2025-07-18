@@ -1,0 +1,58 @@
+services:
+  # База данных
+  database:
+    container_name: database
+    image: mysql:5.7
+    networks:
+      - MaxmollTest_network
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - ${MYSQL_PORT}:${MYSQL_PORT}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: unless-stopped
+
+  # Приложение
+  app:
+    container_name: app
+    build:
+      context: ./docker/app
+      dockerfile: dockerfile
+    networks:
+      - MaxmollTest_network
+    ports:
+      - 9000:9000
+    depends_on:
+      - database
+    volumes:
+      - ./app:/var/www/html
+    restart: unless-stopped
+
+  # PhpMyAdmin
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    networks:
+      - MaxmollTest_network
+    ports:
+      - 8080:80
+    environment:
+      - PMA_HOST=${MYSQL_HOST}
+      - PMA_PORT=${MYSQL_PORT}
+      - PMA_USER=${MYSQL_USER}
+      - PMA_PASSWORD=${MYSQL_PASSWORD}
+    depends_on:
+      - database
+    restart: unless-stopped
+
+networks:
+  MaxmollTest_network:
+    name: MaxmollTest_network
+
+volumes:
+  mysql_data:
+    driver: local

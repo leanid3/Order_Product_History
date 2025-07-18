@@ -1,0 +1,48 @@
+FROM php:8.2-fpm
+
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    zip \
+    unzip \
+    libzip-dev \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    libwebp-dev \
+    zlib1g-dev \
+    libxml2-dev \
+    libbz2-dev \
+    libicu-dev \
+    libonig-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Установка PHP расширений
+RUN docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype \
+    && docker-php-ext-install \
+        pdo_mysql \
+        mbstring \
+        exif \
+        pcntl \
+        bcmath \
+        gd \
+        intl \
+        zip \
+        xml \
+        bz2 \
+        opcache
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN chmod +x /usr/bin/composer
+
+WORKDIR /var/www/html
+
+
+# Создание необходимых директорий
+RUN mkdir -p /var/www/html/storage/app/public \
+    /var/www/html/storage/framework/cache \
+    /var/www/html/storage/framework/views \
+    /var/www/html/storage/logs
+
+
+CMD ["php-fpm"]
