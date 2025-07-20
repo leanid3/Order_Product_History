@@ -38,11 +38,6 @@ RUN chmod +x /usr/bin/composer
 WORKDIR /var/www/html
 
 
-# Создание необходимых директорий
-RUN mkdir -p /var/www/html/storage/app/public \
-    /var/www/html/storage/framework/cache \
-    /var/www/html/storage/framework/views \
-    /var/www/html/storage/logs
-
-
-CMD ["php-fpm"]
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+CMD ["sh", "-c", "entrypoint.sh && php-fpm"]
