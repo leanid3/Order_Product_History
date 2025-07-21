@@ -15,12 +15,11 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('customer', 255);
-            $table->timestamp('created_at')->useCurrent();
             $table->timestamp('completed_at')->nullable();
             $table->unsignedBigInteger('warehouse_id');
             $table->string('status', 255)->default('active');
-            
             $table->foreign('warehouse_id')->references('id')->on('warehouses');
+            $table->timestamps();
         });
     }
 

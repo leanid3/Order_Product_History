@@ -19,6 +19,7 @@ return new class extends Migration
             $table->primary(['product_id', 'warehouse_id']);
             $table->foreign('product_id')->references('id')->on('products');
             $table->foreign('warehouse_id')->references('id')->on('warehouses');
+            $table->timestamps();
         });
     }
 
